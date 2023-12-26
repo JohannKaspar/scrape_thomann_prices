@@ -1,7 +1,7 @@
 import bs4
 import requests
 
-base_url = "https://www.thomann.de/de/"
+base_url = "https://www.thomann.de/de"
 
 def get_page(url, params=None):
     res = requests.get(url, params=params)
@@ -10,6 +10,28 @@ def get_page(url, params=None):
 
 def get_soup(page):
     return bs4.BeautifulSoup(page, 'html.parser')
+
+# function that extracts ther article number
+def get_article_number(soup):
+    # Find the <span> element with the class "keyfeature__label" containing the label "Artikelnummer"
+    label_element = soup.find("span", class_="keyfeature__label", text="Artikelnummer")
+
+    # Check if the label element is found
+    if label_element:
+        # Find the sibling <span> element with the article number
+        article_number_element = label_element.find_next_sibling("span", class_="fx-text")
+
+        # Check if the article number element is found
+        if article_number_element:
+            # Extract the article number
+            article_number = article_number_element.text.strip()
+            return article_number
+        else:
+            print("Article number element not found.")
+            return None
+    else:
+        print("Label element 'Artikelnummer' not found.")
+        return None
 
 # function that extracts the text of the h1 element with class "fx-product-headline product-title__title"
 def get_product_name(soup):
@@ -28,7 +50,7 @@ def get_product_name(soup):
 def get_price(soup):
     price_element = soup.select('div[class="price"]')
     if price_element:
-        return price_element[0].get_text().strip().replace(u'\xa0', u' ')
+        return float(price_element[0].get_text().strip().replace(u'\xa0€', u' ').replace(',', '.'))
     else:
         return "Preis nicht gefunden"
     return 
