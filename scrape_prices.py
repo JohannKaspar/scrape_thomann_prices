@@ -1,6 +1,8 @@
 import time
 from helpers import *
 import csv
+import os
+import datetime
 
 instrument_urls = {
     "geigensaiten": "alle-produkte-der-kategorie-saiten-fuer-violinen.html",
@@ -17,6 +19,21 @@ req_params = {
     'filter': 'true',
     'setViewMode': 'list'
 }
+
+# Get the current date
+current_date = datetime.date.today()
+
+# Format the date as "YYYY_mm_dd"
+formatted_date = current_date.strftime("%Y_%m_%d")
+
+# check if there is a directory with the date of today and delete its content and the directory
+if os.path.isdir(f"data/{formatted_date}"):
+    for file in os.listdir(f"data/{formatted_date}"):
+        os.remove(f"data/{formatted_date}/{file}")
+    os.rmdir(f"data/{formatted_date}")
+
+# create a directory in the data dierctory named with the date of today
+os.mkdir(f"data/{formatted_date}")
 
 for instrument, instrument_url in instrument_urls.items():
     # loop thorugh the instrument_subpages and create a list of all product links
@@ -38,7 +55,7 @@ for instrument, instrument_url in instrument_urls.items():
 
     product_list = []
     # loop through the product links and extract the product name and price
-    for i, product_link in enumerate(product_links[:20]):
+    for i, product_link in enumerate(product_links):
         product_page = get_page(create_url(product_link))
         product_soup = get_soup(product_page)
         product_name = get_product_name(product_soup)
@@ -60,10 +77,10 @@ for instrument, instrument_url in instrument_urls.items():
         time.sleep(0.5)
 
         if i%10 == 0:
-            print(f"Produkt {i} von {len(product_links)} in {instrument} abgerufen")
+            print(f"Produkt {i} von {len(product_links)} in {instrument} abgerufen")    
 
-    # write instrument file
-    with open(f"data/thomann_prices_{instrument}.csv", "w", newline="") as csvfile:
+    # write instrument file in a direcotry named with the date of today
+    with open(f"data/{formatted_date}/thomann_prices_{instrument}.csv", "w", newline="") as csvfile:
         filewriter = csv.writer(csvfile, delimiter='\t',
                                 quotechar='\'',
                                 quoting=csv.QUOTE_MINIMAL)
@@ -81,7 +98,7 @@ for instrument, instrument_url in instrument_urls.items():
             filewriter.writerow(item_info)
 
     # write total file
-    with open(f"data/thomann_prices_all.csv", "w", newline="") as csvfile:
+    with open(f"data/{formatted_date}/thomann_prices_all.csv", "w", newline="") as csvfile:
         filewriter = csv.writer(csvfile, delimiter='\t',
                                 quotechar='\'',
                                 quoting=csv.QUOTE_MINIMAL)
