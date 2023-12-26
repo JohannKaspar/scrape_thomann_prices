@@ -67,7 +67,7 @@ for instrument, instrument_url in instrument_urls.items():
             "", #GTIN/EAN
             product_name, #Bezeichnung
             "", #Beschreibung
-            f"Thomann Artikelnummer {article_number}, {product_page}", #Notiz
+            f"Thomann Artikelnummer {article_number}, {create_url(product_link)}", #Notiz
             "Stück", #Einheit
             "USt 19%", #Steuerart
             product_price, #Bruttopreis
