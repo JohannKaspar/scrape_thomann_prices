@@ -35,6 +35,12 @@ if os.path.isdir(f"data/{formatted_date}"):
 # create a directory in the data dierctory named with the date of today
 os.mkdir(f"data/{formatted_date}")
 
+# check if there is a reference file and if so, get its dialect
+if os.path.isfile("data/reference.csv"):
+    dialect = get_dialect("data/reference.csv")
+else:
+    dialect = "excel"
+
 for instrument, instrument_url in instrument_urls.items():
     # loop thorugh the instrument_subpages and create a list of all product links
     page_number = 1
@@ -81,9 +87,8 @@ for instrument, instrument_url in instrument_urls.items():
 
     # write instrument file in a direcotry named with the date of today
     with open(f"data/{formatted_date}/thomann_prices_{instrument}.csv", "w", newline="") as csvfile:
-        filewriter = csv.writer(csvfile, delimiter='\t',
-                                quotechar='\'',
-                                quoting=csv.QUOTE_MINIMAL)
+        filewriter = csv.writer(csvfile,
+                                dialect=dialect)
         header = ["Artikelnummer",
                   "GTIN/EAN",
                   "Bezeichnung",
@@ -99,9 +104,8 @@ for instrument, instrument_url in instrument_urls.items():
 
     # write total file
     with open(f"data/{formatted_date}/thomann_prices_all.csv", "w", newline="") as csvfile:
-        filewriter = csv.writer(csvfile, delimiter='\t',
-                                quotechar='\'',
-                                quoting=csv.QUOTE_MINIMAL)
+        filewriter = csv.writer(csvfile,
+                                dialect=dialect)
         header = ["Artikelnummer",
                   "GTIN/EAN",
                   "Bezeichnung",
