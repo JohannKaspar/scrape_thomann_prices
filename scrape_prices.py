@@ -41,6 +41,23 @@ if os.path.isfile("data/reference.csv"):
 else:
     dialect = "excel"
 
+header = [
+    "Artikelnummer",
+    "GTIN/EAN",
+    "Bezeichnung",
+    "Beschreibung",
+    "Notiz",
+    "Einheit",
+    "Steuerart",
+    "Bruttopreis",
+    "Thomann Artikelnummer"
+    ]
+# write header of total file
+with open(f"data/{formatted_date}/thomann_prices_all.csv", "a", newline="") as csvfile:
+    filewriter = csv.writer(csvfile,
+                            dialect=dialect)
+    filewriter.writerow(header)
+
 for instrument, instrument_url in instrument_urls.items():
     # loop thorugh the instrument_subpages and create a list of all product links
     page_number = 1
@@ -84,37 +101,18 @@ for instrument, instrument_url in instrument_urls.items():
 
         if i%10 == 0:
             print(f"Produkt {i} von {len(product_links)} in {instrument} abgerufen")    
-
+        
     # write instrument file in a direcotry named with the date of today
     with open(f"data/{formatted_date}/thomann_prices_{instrument}.csv", "w", newline="") as csvfile:
         filewriter = csv.writer(csvfile,
                                 dialect=dialect)
-        header = ["Artikelnummer",
-                  "GTIN/EAN",
-                  "Bezeichnung",
-                  "Beschreibung",
-                  "Notiz",
-                  "Einheit",
-                  "Steuerart",
-                  "Bruttopreis",
-                  "Thomann Artikelnummer"]
         filewriter.writerow(header)
         for item_info in product_list:
             filewriter.writerow(item_info)
 
     # write total file
-    with open(f"data/{formatted_date}/thomann_prices_all.csv", "w", newline="") as csvfile:
+    with open(f"data/{formatted_date}/thomann_prices_all.csv", "a", newline="") as csvfile:
         filewriter = csv.writer(csvfile,
                                 dialect=dialect)
-        header = ["Artikelnummer",
-                  "GTIN/EAN",
-                  "Bezeichnung",
-                  "Beschreibung",
-                  "Notiz",
-                  "Einheit",
-                  "Steuerart",
-                  "Bruttopreis",
-                  "Thomann Artikelnummer"]
-        filewriter.writerow(header)
         for item_info in product_list:
             filewriter.writerow(item_info)

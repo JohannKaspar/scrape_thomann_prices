@@ -1,5 +1,6 @@
 import bs4
 import requests
+import csv
 
 base_url = "https://www.thomann.de/de"
 
@@ -50,7 +51,7 @@ def get_product_name(soup):
 def get_price(soup):
     price_element = soup.select('div[class="price"]')
     if price_element:
-        return float(price_element[0].get_text().strip().replace(u'\xa0€', u' ').replace(',', '.'))
+        return price_element[0].get_text().replace(u'\xa0€', u' ').strip()
     else:
         return "Preis nicht gefunden"
     return 
@@ -67,3 +68,8 @@ def get_product_links(soup):
 
 def create_url(extension, base_url=base_url):
     return base_url + "/" + extension
+
+def get_dialect(path_to_csv):
+    with open(path_to_csv, "r", newline='') as csvfile:
+        dialect = csv.Sniffer().sniff(csvfile.read(1024))
+        return dialect
